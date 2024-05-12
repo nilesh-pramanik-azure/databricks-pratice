@@ -39,3 +39,11 @@ CREATE DATABASE IF NOT EXISTS f1_presentation
 COMMENT 'This database will hold all the tables for processed files and the tables will be Managed'
 LOCATION '/mnt/{varStorageAccntName}/{varGoldContainerName}/SQL/f1_presentation_database'
 """)
+
+# COMMAND ----------
+
+spark.sql(f"""
+CREATE DATABASE IF NOT EXISTS deltadb
+COMMENT 'This database will hold all the tables for processed files and the tables will be Managed'
+LOCATION '/mnt/{varStorageAccntName}/{varBrozeContainerName}'
+""")
