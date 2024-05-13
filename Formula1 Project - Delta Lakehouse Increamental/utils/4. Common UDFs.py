@@ -64,3 +64,42 @@ def func_MountUnmountContainer(varStorageAccountName, varContainerName, dictSecr
 
 
 
+
+# COMMAND ----------
+
+from pyspark.sql.functions import current_timestamp, to_date, lit, col
+from delta.tables import DeltaTable
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC #####Function to add the audit fields
+
+# COMMAND ----------
+
+def func_AddAuditFields(varIngestDF, varSourceSystem, varJobRunId, varCycleDate):
+
+    varIngestDF = varIngestDF \
+                    .withColumn("source_system", lit(varSourceSystem)) \
+                    .withColumn("job_run_id", lit(varJobRunId)) \
+                    .withColumn("cycle_date", to_date(lit(varCycleDate),'yyyy-MM-dd')) \
+                    .withColumn("row_start", current_timestamp()) \
+                    .withColumn("row_end", to_date(lit("9999-12-30"),'yyyy-MM-dd'))
+
+    return varIngestDF
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC #####Function to ingest raw files for overwrite
+
+# COMMAND ----------
+
+def func_IngestOverwriteFile(varIngestDF, varDatabase, varTable, varSourceSystem, varJobRunId, varCycleDate):
+
+    varIngestDF = func_AddAuditFields(varIngestDF, varSourceSystem, varJobRunId, varCycleDate)
+
+    varIngestDF.write \
+                .format("delta") \
+                .mode("overwrite") \
+                .saveAsTable(f"{varDatabase}.{varTable}")
