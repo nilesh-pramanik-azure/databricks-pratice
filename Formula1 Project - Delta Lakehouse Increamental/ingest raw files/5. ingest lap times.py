@@ -126,10 +126,6 @@ else:
 
 # COMMAND ----------
 
-display(df_temp)
-
-# COMMAND ----------
-
 # MAGIC %sql
 # MAGIC OPTIMIZE f1_processed.lap_times
 # MAGIC ZORDER BY (driver_id, lap)
